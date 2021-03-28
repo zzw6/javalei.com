@@ -13,7 +13,6 @@ import { useIntl, Link, history, FormattedMessage, SelectLang, useModel } from '
 import Footer from '@/components/Footer';
 import { login } from '@/services/ant-design-pro/api';
 import { getFakeCaptcha } from '@/services/ant-design-pro/login';
-
 import styles from './index.less';
 
 const LoginMessage: React.FC<{
@@ -28,13 +27,15 @@ const LoginMessage: React.FC<{
     showIcon
   />
 );
-
 /** 此方法会跳转到 redirect 参数所在的位置 */
+
 const goto = () => {
   if (!history) return;
   setTimeout(() => {
     const { query } = history.location;
-    const { redirect } = query as { redirect: string };
+    const { redirect } = query as {
+      redirect: string;
+    };
     history.push(redirect || '/');
   }, 10);
 };
@@ -44,39 +45,84 @@ const Login: React.FC = () => {
   const [userLoginState, setUserLoginState] = useState<API.LoginResult>({});
   const [type, setType] = useState<string>('account');
   const { initialState, setInitialState } = useModel('@@initialState');
-
   const intl = useIntl();
 
   const fetchUserInfo = async () => {
-    const userInfo = await initialState?.fetchUserInfo?.();
+    const userInfo = {
+      name: 'Serati Ma',
+      avatar: 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
+      userid: '00000001',
+      email: 'antdesign@alipay.com',
+      signature: '海纳百川，有容乃大',
+      title: '交互专家',
+      group: '蚂蚁金服－某某某事业群－某某平台部－某某技术部－UED',
+      tags: [
+        {
+          key: '0',
+          label: '很有想法的',
+        },
+        {
+          key: '1',
+          label: '专注设计',
+        },
+        {
+          key: '2',
+          label: '辣~',
+        },
+        {
+          key: '3',
+          label: '大长腿',
+        },
+        {
+          key: '4',
+          label: '川妹子',
+        },
+        {
+          key: '5',
+          label: '海纳百川',
+        },
+      ],
+      notifyCount: 12,
+      unreadCount: 11,
+      country: 'China',
+      access: 'admin',
+      geographic: {
+        province: {
+          label: '浙江省',
+          key: '330000',
+        },
+        city: {
+          label: '杭州市',
+          key: '330100',
+        },
+      },
+      address: '西湖区工专路 77 号',
+      phone: '0752-268888888',
+    };
+
     if (userInfo) {
-      setInitialState({
-        ...initialState,
-        currentUser: userInfo,
-      });
+      setInitialState({ ...initialState, currentUser: userInfo });
     }
   };
 
   const handleSubmit = async (values: API.LoginParams) => {
     setSubmitting(true);
+
     try {
       // 登录
-      const msg = await login({ ...values, type });
-      if (msg.status === 'ok') {
-        message.success('登录成功！');
-        await fetchUserInfo();
-        goto();
-        return;
-      }
-      // 如果失败去设置用户错误信息
-      setUserLoginState(msg);
+      message.success('登录成功！');
+      await fetchUserInfo();
+      goto();
+      return; // 如果失败去设置用户错误信息
     } catch (error) {
+      console.log(error);
       message.error('登录失败，请重试！');
     }
+
     setSubmitting(false);
   };
-  const { status, type: loginType } = userLoginState;
 
+  const { status, type: loginType } = userLoginState;
   return (
     <div className={styles.container}>
       <div className={styles.lang}>{SelectLang && <SelectLang />}</div>
@@ -132,7 +178,7 @@ const Login: React.FC = () => {
                 })}
               />
             </Tabs>
-                {console.log(status)}
+            {console.log(status)}
             {status === 'error' && loginType === 'account' && (
               <LoginMessage
                 content={intl.formatMessage({
@@ -153,12 +199,7 @@ const Login: React.FC = () => {
                   rules={[
                     {
                       required: true,
-                      message: (
-                        <FormattedMessage
-                          id="pages.login.username.required"
-                          defaultMessage="请输入用户名!"
-                        />
-                      ),
+                      message: '用户名是必填项！',
                     },
                   ]}
                 />
@@ -172,12 +213,7 @@ const Login: React.FC = () => {
                   rules={[
                     {
                       required: true,
-                      message: (
-                        <FormattedMessage
-                          id="pages.login.password.required"
-                          defaultMessage="请输入密码！"
-                        />
-                      ),
+                      message: '密码是必填项！',
                     },
                   ]}
                 />
@@ -200,21 +236,11 @@ const Login: React.FC = () => {
                   rules={[
                     {
                       required: true,
-                      message: (
-                        <FormattedMessage
-                          id="pages.login.phoneNumber.required"
-                          defaultMessage="请输入手机号！"
-                        />
-                      ),
+                      message: '手机号是必填项！',
                     },
                     {
                       pattern: /^1\d{10}$/,
-                      message: (
-                        <FormattedMessage
-                          id="pages.login.phoneNumber.invalid"
-                          defaultMessage="手机号格式错误！"
-                        />
-                      ),
+                      message: '不合法的手机号！',
                     },
                   ]}
                 />
@@ -237,6 +263,7 @@ const Login: React.FC = () => {
                         defaultMessage: '获取验证码',
                       })}`;
                     }
+
                     return intl.formatMessage({
                       id: 'pages.login.phoneLogin.getVerificationCode',
                       defaultMessage: '获取验证码',
@@ -246,21 +273,18 @@ const Login: React.FC = () => {
                   rules={[
                     {
                       required: true,
-                      message: (
-                        <FormattedMessage
-                          id="pages.login.captcha.required"
-                          defaultMessage="请输入验证码！"
-                        />
-                      ),
+                      message: '验证码是必填项！',
                     },
                   ]}
                   onGetCaptcha={async (phone) => {
                     const result = await getFakeCaptcha({
                       phone,
                     });
+
                     if (result === false) {
                       return;
                     }
+
                     message.success('获取验证码成功！验证码为：1234');
                   }}
                 />
@@ -272,7 +296,7 @@ const Login: React.FC = () => {
               }}
             >
               <ProFormCheckbox noStyle name="autoLogin">
-                <FormattedMessage id="pages.login.rememberMe" defaultMessage="自动登录" />
+                自动登录
               </ProFormCheckbox>
               <a
                 style={{
@@ -284,10 +308,10 @@ const Login: React.FC = () => {
             </div>
           </ProForm>
           {/* <Space className={styles.other}>
-            <FormattedMessage id="pages.login.loginWith" defaultMessage="其他登录方式" />
-            <AlipayCircleOutlined className={styles.icon} />
-            <TaobaoCircleOutlined className={styles.icon} />
-            <WeiboCircleOutlined className={styles.icon} />
+           <FormattedMessage id="pages.login.loginWith" defaultMessage="其他登录方式" />
+           <AlipayCircleOutlined className={styles.icon} />
+           <TaobaoCircleOutlined className={styles.icon} />
+           <WeiboCircleOutlined className={styles.icon} />
           </Space> */}
         </div>
       </div>

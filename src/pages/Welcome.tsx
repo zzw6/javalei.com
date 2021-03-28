@@ -15,22 +15,41 @@ const CodePreview: React.FC = ({ children }) => (
 export default (): React.ReactNode => {
   const intl = useIntl();
   let src = 'http://javalei.com:81' + window.location.pathname;
-  let style = { width: '100%', height: '1000px' };
+  let style = {
+    width: '100%',
+    height: '1000px',
+  };
   console.log(window.location.pathname);
 
   switch (window.location.pathname) {
     case '/et':
-      style = { width: '3540pt', height: '3386pt' };
+      style = {
+        width: '3540pt',
+        height: '3386pt',
+      };
       break;
-      case '/t':
-        style = { width: '1649px', height: '10410px' };
-        break;
-        case '/api':
-          style = { width: '100%', height: '1580px' };
-          break; 
-          case '/git':
-            style = { width: '100%', height: '1480px' };
-            break; 
+
+    case '/t':
+      style = {
+        width: '1649px',
+        height: '10410px',
+      };
+      break;
+
+    case '/api':
+      style = {
+        width: '100%',
+        height: '1580px',
+      };
+      break;
+
+    case '/git':
+      style = {
+        width: '100%',
+        height: '1480px',
+      };
+      break;
+
     default:
       break;
   }

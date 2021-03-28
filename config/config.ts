@@ -14,6 +14,8 @@ export default defineConfig({
   dva: {
     hmr: true,
   },
+  base: '/nav/',
+  publicPath: '/nav/',
   layout: {
     // https://umijs.org/zh-CN/plugins/plugin-layout
     locale: true,
